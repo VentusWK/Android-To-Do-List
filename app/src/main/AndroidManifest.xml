@@ -14,7 +14,7 @@
         android:theme="@style/Theme.RoomWithAView"
         tools:targetApi="32">
         <activity
-            android:name=".NewWordActivity"
+            android:name=".NewToDoItemActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

@@ -7,7 +7,7 @@ class ToDoItemRepository (private val toDoItemDao: ToDoItemDao){
 
     val allToDoItems: Flow<List<ToDoItem>> = toDoItemDao.getToDoItems()
 
-    @Suppress("RedudndantSuspendModifier")
+    @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun insert(toDoItem: ToDoItem){
         toDoItemDao.insert(toDoItem)

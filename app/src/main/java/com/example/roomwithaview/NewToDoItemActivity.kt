@@ -8,24 +8,27 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 
-class NewWordActivity : AppCompatActivity() {
+class NewToDoItemActivity : AppCompatActivity() {
 
-    private lateinit var editWordView: EditText
+    private lateinit var editToDoItemTitle: EditText
+    private lateinit var editTodoItemContent: EditText
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_new_word)
-        editWordView = findViewById(R.id.edit_word)
+        setContentView(R.layout.activity_new_todo_item)
+        editToDoItemTitle = findViewById(R.id.todo_item_title)
+        editTodoItemContent = findViewById(R.id.todo_item_content)
 
         val button = findViewById<Button>(R.id.button_save)
         button.setOnClickListener {
             val replyIntent = Intent()
-            if (TextUtils.isEmpty(editWordView.text)) {
+            if (TextUtils.isEmpty(editToDoItemTitle.text)) {
                 setResult(Activity.RESULT_CANCELED, replyIntent)
             } else {
-                val word = editWordView.text.toString()
-                replyIntent.putExtra(EXTRA_TITLE, word)
-                replyIntent.putExtra(EXTRA_CONTENT,"Fix This")
+                val title = editToDoItemTitle.text.toString()
+                val content = editTodoItemContent.text.toString()
+                replyIntent.putExtra(EXTRA_TITLE, title)
+                replyIntent.putExtra(EXTRA_CONTENT,content)
                 setResult(Activity.RESULT_OK, replyIntent)
             }
             finish()

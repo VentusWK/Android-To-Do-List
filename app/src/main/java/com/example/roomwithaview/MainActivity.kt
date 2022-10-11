@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
@@ -21,7 +22,6 @@ class MainActivity : AppCompatActivity() {
 
     private val CHANNEL_ID = "ToDoItemNotificationChannel"
 
-    private val newWordActivityRequestCode = 1
     private val toDoListViewModel: ToDoListViewModel by viewModels {
         ToDoListViewModel.ToDoListViewModelFactory((application as ToDoListApplication).repository)
     }
@@ -58,35 +58,35 @@ class MainActivity : AppCompatActivity() {
 
         val fab = findViewById<FloatingActionButton>(R.id.fab)
         fab.setOnClickListener {
-            val intent = Intent(this@MainActivity, NewWordActivity::class.java)
-            startActivityForResult(intent, newWordActivityRequestCode)
+            val intent = Intent(this@MainActivity, NewToDoItemActivity::class.java)
+            getResult.launch(intent)
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, intentData: Intent?) {
-        super.onActivityResult(requestCode, resultCode, intentData)
-
-        if (requestCode == newWordActivityRequestCode && resultCode == Activity.RESULT_OK) {
-            var itemTitle:String = ""
-            var itemContent:String = ""
-            intentData?.getStringExtra(NewWordActivity.EXTRA_TITLE)?.let { title ->
-                 itemTitle = title
+    private val getResult =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                var itemTitle = ""
+                var itemContent = ""
+                it.data?.getStringExtra(NewToDoItemActivity.EXTRA_TITLE)?.let { title ->
+                    itemTitle = title
+                }
+                it.data?.getStringExtra(NewToDoItemActivity.EXTRA_CONTENT)?.let { content ->
+                    itemContent = content
+                }
+                val toDoItem = ToDoItem(null, itemTitle, itemContent, 0, 0)
+                toDoListViewModel.insert(toDoItem)
+                createNotification(toDoItem)
+            } else {
+                Toast.makeText(
+                    applicationContext,
+                    R.string.empty_not_saved,
+                    Toast.LENGTH_LONG
+                ).show()
             }
-            intentData?.getStringExtra(NewWordActivity.EXTRA_CONTENT)?.let { content ->
-                itemContent = content
-            }
-            val toDoItem:ToDoItem = ToDoItem(null,itemTitle,itemContent,0,0)
-            toDoListViewModel.insert(toDoItem)
-            createNotification(toDoItem)
-
-        } else {
-            Toast.makeText(
-                applicationContext,
-                R.string.empty_not_saved,
-                Toast.LENGTH_LONG
-            ).show()
         }
-    }
 
     private fun createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
